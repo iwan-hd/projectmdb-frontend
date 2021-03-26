@@ -1,5 +1,7 @@
-import React, {useState, useEffect} from 'react'
-import Axios from 'axios';
+import React, {useState, useEffect} from 'react';
+//import Axios from 'axios';  diganti jadi function users.js
+
+import UserService from '../../../config/api/users.js';
 import { useHistory } from "react-router-dom";
 
 //import material-ui
@@ -10,6 +12,11 @@ import TableRow from '@material-ui/core/TableRow'
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from '@material-ui/core/TableContainer';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import Tooltip from '@material-ui/core/Tooltip';
+import Paper from '@material-ui/core/Paper';
+import {useStyles} from './style.js';
 
 export default function Users() {
 
@@ -17,7 +24,8 @@ export default function Users() {
     const history = useHistory();
 
     useEffect(() => {
-      Axios.get('http://localhost:8090/api/v1/users')
+    ////  Axios.get('http://localhost:8090/api/v1/users') di ganti jadi
+    UserService.getAll()
       .then(response => {
           const {datatabel, message, status} = response.data;
           if (message == 'success') {
@@ -33,30 +41,39 @@ export default function Users() {
 
     return (
         <div style={{padding : 10}}>
-            <Typography variant="h3" component="h4">
+           <Typography variant="h4" component="h4" align="center"> 
              Halaman Daftar Users
             </Typography>
-       
-            <TableContainer>
+            <br></br>
+
+            <TableContainer component={Paper}>
                 <Table size="small">
                     <TableHead>
                         <TableRow>
                             <TableCell>No</TableCell>
                             <TableCell>Nama</TableCell>
                             <TableCell>Foto</TableCell>
-                            <TableCell>Loginxx</TableCell>
-                            
+                            <TableCell>User Name</TableCell>
+                            <TableCell>Action x</TableCell>
                         </TableRow>
                     </TableHead>
+
 
                     <TableBody>
                             {users && users.map((user, index) => {
                             return <TableRow hover key={index}>
-                                <TableCell>{user.id}</TableCell>
-                                <TableCell>{user.userName}</TableCell>
+                                <TableCell>{index+1}</TableCell>
+                                <TableCell>{user.nama}</TableCell>
                                 <TableCell>{user.foto}</TableCell>
-                                <TableCell>{user.loginId}</TableCell>
-                                
+                                <TableCell>{user.username}</TableCell>
+                                <TableCell>
+                                    <Tooltip title="View">
+                                        <IconButton aria-label="View" size="small">
+                                            <VisibilityIcon  fontSize="small"/>
+                                        </IconButton>
+                                    </Tooltip>
+                                     
+                                 </TableCell>
                                 
                             </TableRow>
                         })}

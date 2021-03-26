@@ -68,7 +68,7 @@ export default function Private() {
                {/* Buat Title */}
                 <Route path="/users" children="Title Users" />
                 <Route path="/partnumbers" children="Title Part Number" />
-                <Route path="/gr" children="Title GR" />
+                <Route path="/grlist" children="Title GR" />
                 <Route children="Home"/>
             </Switch>
           </Typography>
