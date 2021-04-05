@@ -33,8 +33,7 @@ import { Route, Switch } from "react-router-dom";
 //import komponent
 import Users from './users/index.js';
 import PartNumber from './partnumber/index.js';
-import GRList from './gr/index.js'
-import Gr from './gr/index.js';
+import GRList from './gr/index.js';
 
 export default function Private(props) {
   
@@ -206,11 +205,14 @@ export default function Private(props) {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
        {/* Container = isi dari komponen yg di private (isi list menu) */}
+
         <Container maxWidth="lg" className={classes.container}>
 
             <Switch>
                 <Route path="/users" component={Users} />
                 <Route path="/partnumbers" component={PartNumber} />
+               
+              
                 <Route path="/grlist" component={GRList} />
             </Switch>
 

@@ -23,6 +23,7 @@ function App() {
           <PrivateRoad path="/" component={Private} exact />
           <PrivateRoad path="/users" component={Private} />
           <PrivateRoad path="/partnumbers" component={Private} />
+     
           <PrivateRoad path="/grlist" component={Private} /> 
           <PrivateRoad path="/lupa-pasword" component={Private} />
           
