@@ -7,10 +7,11 @@ import Paper from '@material-ui/core/Paper';
 import Typograpy from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import {Link,Redirect} from 'react-router-dom';
+import Avatar from '@material-ui/core/Avatar';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import AuthService from '../../config/api/auth';
+import Typography from '@material-ui/core/Typography';
+
 
 
 export default function Login(props) {
@@ -78,7 +79,7 @@ export default function Login(props) {
             
             // try {
                 
-                setSubmitting(true);
+                setSubmitting(true); // kolom inputan di frezze waktu button di klik
                 AuthService.login(form.username,form.password)
                 .then(() => {
                     props.history.push('/');
@@ -86,15 +87,19 @@ export default function Login(props) {
 
                 },
                 (error) => {
+
+                    alert('Username or Password Not Match',error.response);
+                   // dispatch(userUpdateProfileFail());
+                    console.log(error);
                     const newError = (error.response &&
                         error.response.data &&
                         error.response.data.message) ||
                       error.message || 
                       error.toString();
                     
-                      setMessage(newError.error);
+                   //   setMessage(newError);
                       setError(newError);
-                      setSubmitting(false);
+                      setSubmitting(false); // kolom inputan bisa berfungsi lagi...tidak frezze
                 }
                 );
                 
@@ -103,22 +108,28 @@ export default function Login(props) {
         
     }
 
-    return <Container maxWidth="xs">
+    return <Container component="main" maxWidth="xs">
         <Paper className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+    
             <Typograpy
             component="h1"
             variant="h5"
             className={classes.title, classes.blue}
             >
-            <VpnKeyIcon className={classes.iconRight} />
+            
                 Halaman Login
             </Typograpy>
-
+        
             {message && (
-            alert({message})
+            <Typography>
+                {message}
+            </Typography>
             
           )}
-            <form  onSubmit={handleSubmit} noValidate>
+            <form className={classes.form} onSubmit={handleSubmit} noValidate>
 
                 <TextField
                     id="username"
@@ -133,6 +144,7 @@ export default function Login(props) {
                     helperText={error.username}
                     error={error.username?true:false}
                     disabled={submitting}
+                    variant="outlined"
                     
                 />
 
@@ -149,26 +161,23 @@ export default function Login(props) {
                     helperText={error.password}
                     error={error.password?true:false}
                     disabled={submitting}
-
+                    variant="outlined"
                     
                 />
 
-                <div  className={classes.buttonStyle}>
+                
                 <Button
                         type="submit"
                         color="primary"
                         variant ="contained"
                         size="large"
                         disabled={submitting}
-
-
+                        className={classes.submit}
+                        fullWidth
                     >
                         Login
                 </Button>
-                   
-
-
-                </div>
+               
                   
             </form>
              

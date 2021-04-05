@@ -1,8 +1,8 @@
 function authHeader(params) {
-    const userweb  = localStorage.getItem("userweb");
+    const userweb  = JSON.parse(localStorage.getItem("userweb"));
 
     if (userweb && userweb.accessToken) {
-        return 
+        return {Authorization: `Bearer ${userweb.accessToken}`}
     } else {
         
     }

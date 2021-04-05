@@ -22,6 +22,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import UserIcon from '@material-ui/icons/Face';
 import GRListIcon from '@material-ui/icons/Layers';
 import ExitIcon from '@material-ui/icons/ExitToApp';
+import AuthService from '../../config/api/auth.js';
 
 //import styles
 import useStyles  from "./style.js";
@@ -35,11 +36,29 @@ import PartNumber from './partnumber/index.js';
 import GRList from './gr/index.js'
 import Gr from './gr/index.js';
 
-export default function Private() {
+export default function Private(props) {
   
     // basic dashboard
   const classes = useStyles();
+  const {location}= props;
   const [open, setOpen] = React.useState(true);
+  const [adminBoard, setAdminBoard] = React.useState(false);
+  const [userBoard, setUserBoard]= React.useState(false);
+  const [pnBoard, setPnBoard]= React.useState(false);
+  const [grBoard, setGrBoard]= React.useState(false);
+  
+
+  React.useEffect(() => {
+   const user = AuthService.getCurrentUser();
+
+   if (user) {
+     setAdminBoard(user.roles.includes("ROLE_ADMIN"));
+     setUserBoard(user.roles.includes("ROLE_USER"));
+     setPnBoard(user.roles.includes("ROLE_USER_PN"));
+     setGrBoard(user.roles.includes("ROLE_USER_GR"));
+   }
+  }, []);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -48,6 +67,10 @@ export default function Private() {
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
+  const logout = () => {
+    AuthService.logout();
+    props.history.push('/login');
+  }
 
   return (
     <div className={classes.root}>
@@ -72,11 +95,10 @@ export default function Private() {
                 <Route children="Home"/>
             </Switch>
           </Typography>
-          <IconButton color="inherit">
-            {/* <Badge badgeContent={4} color="secondary"> */}
-              {/* <NotificationsIcon /> */}
+          <IconButton color="inherit" onClick={logout}>
+           
               <ExitIcon />
-            {/* </Badge> */}
+         
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -123,23 +145,25 @@ export default function Private() {
             
             />
 
-            <Route path="/users" children={({match, history}) => {
-                    return <ListItem
-                    button
-                    selected = {match ? true : false}
-                    onClick={() => {
-                        history.push('/users')
-                    }}
-                    >
-                        <ListItemIcon>
-                            <UserIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Users"/>
-                    </ListItem>
-            }}
-            
-            />
-
+          {adminBoard && (
+             <Route path="/users" children={({match, history}) => {
+               return <ListItem
+               button
+               selected = {match ? true : false}
+               onClick={() => {
+               history.push('/users')
+               }}
+              >
+                  <ListItemIcon>
+                    <UserIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Users"/>
+                  </ListItem>
+              }}  
+             />
+          )}
+           
+          { (pnBoard || adminBoard || userBoard) ? (
             <Route path="/partnumbers" children={({match, history}) => {
                     return <ListItem
                     button
@@ -155,7 +179,9 @@ export default function Private() {
                     </ListItem>
             }}
             />
+          ) :""}
 
+          {(grBoard || adminBoard || userBoard)  ? (
             <Route path="/grlist" children={({match, history}) => {
                     return <ListItem
                     button
@@ -171,6 +197,8 @@ export default function Private() {
                     </ListItem>
             }}
             />
+          ) :""}
+
 
       </List>
       

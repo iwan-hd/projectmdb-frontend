@@ -20,7 +20,8 @@ class AuthService{
         }).then((response) => {
 
             if (response.data.accessToken) {
-                localStorage.setItem("userweb", JSON.stringify(response.data));          
+                   localStorage.setItem("userweb",JSON.stringify(response.data));      // ini kalo ketutup browser... user masih login
+                // sessionStorage.setItem("userweb", JSON.stringify(response.data));   //ini kalo ketutup browser...user logout,        
             }
             return response.data ;
         } )
@@ -28,11 +29,13 @@ class AuthService{
     };
 
     logout(){
-        localStorage.removeItem("userweb");
+          localStorage.removeItem("userweb")
+        //sessionStorage.removeItem("userweb");
     }
 
     getCurrentUser(){
         return JSON.parse(localStorage.getItem("userweb"));
+        //return JSON.parse(sessionStorage.getItem("userweb"));
     }
 
 }
