@@ -1,111 +1,43 @@
-//1.Library dasar React
-import React, {useState, useEffect} from 'react'
-//import Axios from 'axios';
-import GrService from '../../../config/api/gr.js'
-
-import { useHistory } from "react-router-dom";  //kalo ada kurung kurawal {} itu suatu funtion
-
-//2.import material-ui
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow'
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from '@material-ui/core/TableContainer';
+import React from 'react'
+import { Route, Switch } from 'react-router-dom'
+import ViewGR from './view.js';
+import  ListGR from './list.js';
+import AddGR from './add.js';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import Tooltip from '@material-ui/core/Tooltip';
-import Paper from '@material-ui/core/Paper';
-import {useStyles} from './style.js';
 
-//import Typography from '@material-ui/core/Typography';
-
-
+import Edit from './edit.js';
 
 export default function Gr() {
+return(
 
-    const [gr, setGrs] = useState(useState([]));
-    const history=useHistory();
+    <div style={{padding : 10}}>
+    <Typography variant="h4" component="h4" align="center"> 
+    <Switch>
+           {/* Buat Title */}
 
-     useEffect(() => {
-        GrService.getAll().then( res => {
-            const {datatabel, message, status} = res.data;
-            if (message == 'success') {
-                setGrs(datatabel.body)
-            } else {
-                alert(message);
-            }
-         })
-         .catch(error=>{
-            alert(error);
-         })
-
-         
-        
-     }, [])
-
-     function formatDate(date) {
-        var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
+           <Route path="/grlist/add" children="Add GR" />
+           <Route path="/grlist/edit/:id" children="Halaman Edit GR" />
+           
+            <Route path="/grlist/view/:id" children="Halaman Detail GR" />
+            <Route path="/grlist" children="Halaman List GR" />
+          
     
-        if (month.length < 2) month = '0' + month;
-        if (day.length < 2) day = '0' + day;
-    
-        return [day, month, year].join('/');
-    }
-    
-    return (
-        <div style={{padding : 0}}>
-        {/* <Typography variant="h3" component="h4">
-         Halaman Daftar GR
-        </Typography>  */}
-        {/* Typography (jsx) = h1 (html)  */}
-   
-        <TableContainer component={Paper}>
-            <Table size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>No</TableCell>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Periode</TableCell>
-                        <TableCell>Nr GR</TableCell>
-                        <TableCell>Tanggal</TableCell>
-                        <TableCell>Action</TableCell>
-                    </TableRow>
-                </TableHead>
+        </Switch>
+    </Typography>
+    <br></br>
 
-                <TableBody>
-                        {gr && gr.map((Gr, index) => {
-                            //map seperti for looping
-                            //partnumbers suatu array, ada isinya, sedangkan Partnumber = var 1 object
-                            //index mulai dari 0,1,2,3...
-                        return <TableRow hover key={index}>
-                                 <TableCell>{index + 1}</TableCell>
-                                 <TableCell>{Gr.id}</TableCell>
-                                 <TableCell>{Gr.grPeriode}</TableCell>
-                                 <TableCell>{Gr.grCode}</TableCell>
-                                 <TableCell>{formatDate(Gr.tanggal)}</TableCell>
-                                 <TableCell>
-                                    <Tooltip title="View">
-                                        <IconButton aria-label="View" size="small">
-                                            <VisibilityIcon  fontSize="small"/>
-                                        </IconButton>
-                                    </Tooltip>
-                                     
-                                 </TableCell>
-                               </TableRow>
-                        })}
-                </TableBody>
-            </Table>
-        </TableContainer>
-
+    <Switch>
+       <Route path="/grlist/add" component={AddGR} />
+       <Route path="/grlist/edit/:id" component={Edit} /> 
+       
+       <Route path="/grlist/view/:id" component={ViewGR} /> 
+       <Route path="/grlist" component={ListGR} />
       
-    </div>
+    </Switch>
 
-    )   
-    // end returm
+       
+</div>
+
+
+)
 }
-

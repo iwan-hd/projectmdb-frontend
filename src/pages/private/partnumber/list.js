@@ -10,12 +10,17 @@ import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from '@material-ui/core/TableContainer';
-import Typography from '@material-ui/core/Typography';
+import Button from "@material-ui/core/Button";
 import IconButton from '@material-ui/core/IconButton';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import EditIcon from '@material-ui/icons/Edit';
 import {useStyles} from './style.js'
+import { Tab } from '@material-ui/core';
 
 export default function ListPN() {
 // membuat state pn dalam fungsi setpartnumbers, dalam array 
@@ -25,8 +30,13 @@ const classes = useStyles();
 // buat ngelink ke halaman yg di mau
 const history = useHistory();
 
+//Switch alert=> dialog
+const MySwal = withReactContent(Swal)
+
+
 useEffect(() => {
     PartNumberService.getAll().then(res=>{
+        console.log(res);
         // ambil dari postman
         const {datatabel, message, status} = res.data;
         if (message == 'success') {
@@ -42,12 +52,52 @@ useEffect(() => {
 
 }, [])
 
+const handleDelete = idx => {
+ 
+    MySwal.fire({
+        title: 'Are you sure remove this data?',
+        text: "You won't be able to repeat this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+        PartNumberService.deletePartNumber(idx)
+            .then(response => {
+                    console.log(response)
+                    MySwal.fire(
+                        {
+                            title :  `${response.data.datatabel}`,
+                            icon : 'success',
+                            showConfirmButton: false,
+
+                        }
+                        
+                      )
+                      window.location.reload()
+                   
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            // location.reload();
+            
+        }
+      })
+
+  
+    
+};
+
 return (
-    <div style={{padding : 10}}>
-        <Typography variant="h4" component="h4" align="center"> 
-         Halaman Daftar Part Number
-        </Typography>
-        <br></br>
+    <>
+        
+         <Button variant="contained" color="secondary" onClick={() => { window.location.href='/partnumbers/add' }}>
+          Add PN
+        </Button>
+        
         <TableContainer component={Paper}>
             <Table className={classes.table} size="small">
                 <TableHead>
@@ -56,6 +106,7 @@ return (
                         <TableCell>ID</TableCell>
                         <TableCell>Part Code</TableCell>
                         <TableCell>Part Name</TableCell>
+                        <TableCell>Stock</TableCell>
                         <TableCell>Action</TableCell>
                     </TableRow>
                 </TableHead>
@@ -71,6 +122,7 @@ return (
                                  
                                  <TableCell>{PartNumber.partCode}</TableCell>
                                  <TableCell>{PartNumber.partName}</TableCell>
+                                 <TableCell>{PartNumber.stock}</TableCell>
                                  <TableCell>
                                     <Tooltip title="View">
                                         <IconButton aria-label="View" size="small"
@@ -80,6 +132,23 @@ return (
                                             <VisibilityIcon  fontSize="small"/>
                                         </IconButton>
                                     </Tooltip>
+
+                                    <Tooltip title="Edit">
+                                        <IconButton aria-label="Edit" size="small"
+                                        component = {Link} to={`/partnumbers/edit/${PartNumber.id}`}
+                                        >
+
+                                            <EditIcon fontSize="small"/>
+                                        </IconButton>
+                                        
+                                    </Tooltip>
+                                    <Tooltip title="Delete">
+                                        <IconButton onClick={() => handleDelete(PartNumber.id)}size="small">
+                                     
+                                            <DeleteIcon fontSize="small"/>
+                                        </IconButton>
+                                       
+                                    </Tooltip>
                                      
                                  </TableCell>
                                </TableRow>
@@ -87,8 +156,8 @@ return (
                 </TableBody>
             </Table>
         </TableContainer>
+        </>
 
-      
-    </div>
+   
 )
 }

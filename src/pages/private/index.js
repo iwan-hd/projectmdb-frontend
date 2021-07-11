@@ -45,16 +45,19 @@ export default function Private(props) {
   const [userBoard, setUserBoard]= React.useState(false);
   const [pnBoard, setPnBoard]= React.useState(false);
   const [grBoard, setGrBoard]= React.useState(false);
-  
+  const [user,setUser] = React.useState('')
+ 
 
-  React.useEffect(() => {
-   const user = AuthService.getCurrentUser();
-
-   if (user) {
-     setAdminBoard(user.roles.includes("ROLE_ADMIN"));
-     setUserBoard(user.roles.includes("ROLE_USER"));
-     setPnBoard(user.roles.includes("ROLE_USER_PN"));
-     setGrBoard(user.roles.includes("ROLE_USER_GR"));
+  React.useEffect(() => { 
+    const userLogin = AuthService.getCurrentUser();
+   
+    setUser(userLogin)
+    console.log(user);
+   if (userLogin) {
+     setAdminBoard(userLogin.roles.includes("ROLE_ADMIN"));
+     setUserBoard(userLogin.roles.includes("ROLE_USER"));
+     setPnBoard(userLogin.roles.includes("ROLE_USER_PN"));
+     setGrBoard(userLogin.roles.includes("ROLE_USER_GR"));
    }
   }, []);
 
@@ -94,8 +97,13 @@ export default function Private(props) {
                 <Route children="Home"/>
             </Switch>
           </Typography>
+        
           <IconButton color="inherit" onClick={logout}>
-           
+          <Typography component="h6"  color="inherit" >
+
+          Hallo,  {user.nama} ( {user.roles} )
+          </Typography>
+          <div>&nbsp;</div>
               <ExitIcon />
          
           </IconButton>

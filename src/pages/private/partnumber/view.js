@@ -37,9 +37,7 @@ export default function ViewPN({match}) {
 
     return (
         <div>
-        <Typography variant="h3" component="h1">
-            Data Part Number Detail
-        </Typography>
+       
 
         <Grid container alignItems="center" justify="center">
             {/* <Grid item xs={12} sm={6}>
@@ -58,7 +56,11 @@ export default function ViewPN({match}) {
                         <TableCell>{partnumbers.partName}</TableCell>              
                 </TableRow>
 
-                
+                <TableRow>
+                        <TableCell>Stock</TableCell>
+                        <TableCell>:</TableCell>
+                        <TableCell>{partnumbers.stock}</TableCell>              
+                </TableRow>
              </Table>
                
          </TableContainer>
