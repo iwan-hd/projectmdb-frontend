@@ -11,15 +11,25 @@ import PartNumberService from '../../../config/api/gr.js';
 import {useStyles} from './style.js';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
-import  Button  from '@material-ui/core/Button';
+import Button  from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
+import AddIcon from '@material-ui/icons/Add';
+import Add from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
+
+
 export default function ViewGR({match}) {
     
     console.log(match.params.id);
     const [gr, setGR] = useState({});
     const ID = match.params.id;
     const classes = useStyles();
-    const [amount, setAmount] = useState(0)
+  
+    
+    
+
+    const [amountRow,setAmountRow] =  useState(0);
 
     useEffect(() => {
         PartNumberService.getId(ID).then(res=>{
@@ -35,14 +45,18 @@ export default function ViewGR({match}) {
             alert(error);
         })
       
+      
+
+         
+    }, [])
+   
+
     
 
-        
-    }, [])
 
-    const addRow = (e) => {
+    
 
-    }
+
 
     function formatDate(date) {
         var d = new Date(date),
@@ -55,6 +69,8 @@ export default function ViewGR({match}) {
     
         return [day, month, year].join('/');
     }
+
+
     return (
         <div>
        
@@ -91,116 +107,6 @@ export default function ViewGR({match}) {
         
         </Grid>
 
-        <br/><br/>
-
-        <Grid container alignItems="center" justify="center">
-           <TableContainer component={Paper}>
-           <Table className={classes.table} size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>No</TableCell>
-                        <TableCell>PN</TableCell>
-                        <TableCell>PN Name</TableCell>
-                        <TableCell>Qty</TableCell>
-                        <TableCell>Unit Price</TableCell>
-                        <TableCell>Amount</TableCell>
-                        <TableCell>Action</TableCell>
-                    </TableRow>
-                </TableHead>
-
-                <TableBody>
-                <TableRow>
-                        <TableCell>No</TableCell>
-                        <TableCell>PN001</TableCell>
-                        <TableCell>Pulpen</TableCell>
-                        <TableCell>
-                        <TextField
-                            fullWidth
-                                type="number"
-                                id="qty"
-                                name="qty"
-                                label="Jumlah Barang"
-                                variant="filled"
-                                // value={form.grCode}
-                                color="secondary"
-                                size="medium"
-                                // onChange={handleChange}
-                                // required
-                                // helperText={error.grCode}
-                                // error={error.grCode?true:false}
-                                // disabled={isSubmitting}
-                            />
-
-                        </TableCell>
-                        <TableCell>
-                        <TextField
-                            fullWidth
-                                type="number"
-                                id="unit_price"
-                                name="unit_price"
-                                label="Harga Satuan"
-                                variant="filled"
-                                // value={form.grCode}
-                                color="secondary"
-                                size="medium"
-                                // onChange={handleChange}
-                                // required
-                                // helperText={error.grCode}
-                                // error={error.grCode?true:false}
-                                // disabled={isSubmitting}
-                            />
-                        </TableCell>
-                        <TableCell>{amount}</TableCell>
-                        <TableCell><Button onClick={addRow}>Add</Button></TableCell>
-                </TableRow>
-                   
-                        {/* {gr && gr.map((Gr, index) => {
-                            //map seperti for looping
-                            //partnumbers suatu array, ada isinya, sedangkan Partnumber = var 1 object
-                            //index mulai dari 0,1,2,3...
-                        return <TableRow hover key={index}>
-                                 <TableCell>{index + 1}</TableCell>
-                                 <TableCell>{Gr.id}</TableCell>
-                                 <TableCell>{Gr.grPeriode}</TableCell>
-                                 <TableCell>{Gr.grCode}</TableCell>
-                                 <TableCell>{formatDate(Gr.tanggal)}</TableCell>
-                                 <TableCell>{(Gr.kunci == 1) ? "Locked":"Open"} </TableCell>
-                                 <TableCell>
-                                    <Tooltip title="View">
-                                        <IconButton aria-label="View" size="small"
-                                            component = {Link} to={`/grlist/view/${Gr.id}`}
-                                         >
-
-                                        <VisibilityIcon  fontSize="small"/>
-                                           
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Edit">
-                                        <IconButton aria-label="Edit" size="small"
-                                            component = {Link} to={`/grlist/edit/${Gr.id}`}
-                                         >
-
-                                        <EditIcon fontSize="small"/>
-                                           
-                                        </IconButton>
-                                    </Tooltip>
-
-                                    <Tooltip title="Delete">
-                                        <IconButton onClick={() => handleDelete(Gr.id)}size="small">
-                                     
-                                            <DeleteIcon fontSize="small"/>
-                                        </IconButton>
-                                       
-                                    </Tooltip>
-                                     
-                                 </TableCell>
-                               </TableRow>
-                        })} */}
-                </TableBody>
-            </Table>
-        </TableContainer>
-        </Grid>
         </div>
     )
 }

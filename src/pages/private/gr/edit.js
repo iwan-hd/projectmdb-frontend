@@ -5,10 +5,29 @@ import Button from "@material-ui/core/Button";
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import GRService from '../../../config/api/gr.js';
+import PartNumberService from '../../../config/api/partnumber.js';
 import 'date-fns';
-
+import Grid from '@material-ui/core/Grid';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from '@material-ui/core/TableContainer';
+import TableBody from '@material-ui/core/TableBody';
+import Paper from '@material-ui/core/Paper';
 import DateFnsUtils from '@date-io/date-fns';
 import Switch from '@material-ui/core/Switch';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
+import Add from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
+import Select from '@material-ui/core/Select';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+
+
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -27,7 +46,17 @@ export default function Edit({match}) {
     kunci : ""
   });
 
-   
+  const [formSub, setFormSub] = useState([
+    {
+    idGr : "",
+    idPn : "",
+    qty : 0,
+    unitPrice : 0,
+    amount : 0,
+    index : 0
+},
+
+]);
 const [error, setError] = useState({
     id : "",
     grPeriode : "",
@@ -43,6 +72,8 @@ const [error, setError] = useState({
 
   const [selectedDate, setSelectedDate] = React.useState(new Date());
 
+  const [pnList, setPnList] = React.useState([]);
+  
   const handleDateChange = (date) => {
     setSelectedDate(date);
     setError({
@@ -78,8 +109,38 @@ const [error, setError] = useState({
     })
   
 
+    PartNumberService.getAll().then(res => {
+     
+      const {datatabel , message, status} = res.data;
+      if (message == "success") {
+        // console.log(datatabel.body);
+        setPnList(datatabel.body)
+       
+      } else {
+        alert(message);
+      }
+    })
+    .catch(error => {
+      alert(error)
+    })
 }, [])
 
+
+const addRow = (e) => {
+  const forms = formSub ;
+  forms.push()
+ setFormSub((formSub) => [
+  ...formSub,
+  {
+      idGr : "",
+      idPn : "",
+      qty : 0,
+      unitPrice : 0,
+      amount : 0,
+      index : 0
+  }
+]);   
+}
 
 
   const validate = () => {
@@ -125,6 +186,23 @@ const [error, setError] = useState({
       
       }
 
+      const handleChangeSub = (e , index) => {
+        console.log(e);
+        console.log(index);
+        // setForm( {
+        //    ...form,t`43y.value]
+        // }). 
+        // const forms = form;
+        // forms[index].qty = e.target.value;
+        // forms[index].unirPrice = e.target.value;
+        // forms[index].amount = e.target.value;
+        // this.setState({
+        //   forms
+        // });
+
+    }
+
+
       const handleChecked = e => {
 
         setForm({     
@@ -143,6 +221,74 @@ const [error, setError] = useState({
       
       }
 
+
+      
+
+    const removeRow =(index) => {
+    
+      setFormSub(  [...formSub.slice(0,index), ...formSub.slice(index+1)]);
+      console.log(formSub);
+  }
+
+
+    const handleChangeSelect = index => e =>  {
+      
+        const name =  e.target.value;
+        const idx = [index]
+
+      //   const forms = formSub ;
+      //   forms.push()
+      //   setFormSub((formSub) => [
+      //    ...formSub,
+      //    {
+      //        idGr : "",
+      //        idPn : "",
+      //        qty : 0,
+      //        unitPrice : 0,
+      //        amount : 0,
+      //        index : 0
+      //    }
+      // ]);   
+
+        // console.log(index);
+        //  console.log(name);
+         const forms =  formSub;
+         const newForms = forms.map((form) =>
+         {
+          if (form.index == index) {
+            return {
+              ...form,
+              idPn : name,
+              index : index,
+            }
+          }
+          
+         // return form
+    
+       // }
+        //  ({        //       ...form,
+        //       idPn : name,
+        //       index : idx
+        //   }
+         // );
+
+          // const newArr = myArray.map(item => {
+          //   if (ids.indexOf(item.id) !== -1) {
+          //     return {
+          //       ...item,
+          //       foo: 'newFooValue'
+          //     }
+          //       // })
+    
+        
+       
+
+    });
+     
+    setFormSub(  newForms);
+
+  }
+console.log(formSub);
 
 const handleSubmit =  async e => {
     e.preventDefault();  //tetap di halaman ini, spy nga lari ke Halaman lain
@@ -197,12 +343,21 @@ const handleSubmit =  async e => {
   }
 
 
+  const partnumbers = pnList;
 
+	let partNumberList = partnumbers.length > 0
+		&& partnumbers.map((item, i) => {
+		return (
+			<option key={i} value={item.partCode}>{item.partName}</option>
+		)
+	}, this);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <form className={classes.form} noValidate autoComplete="off">
            {/* matiin Validasi bawaan/ automatis dari Reactnya , autocomplete= histori ketikan di field dimatikan, jadi nga ada sisa ketikan sebelumnya*/}
+           <Grid container spacing={4}>
+           <Grid item xs={4}>
           <TextField
           fullWidth
             // textnya memenuhi containernya
@@ -220,6 +375,8 @@ const handleSubmit =  async e => {
             error={error.grPeriode?true:false}
             disabled={isSubmitting}
           />
+         </Grid>
+         <Grid item xs={4}>
          
          <TextField
          fullWidth
@@ -237,6 +394,10 @@ const handleSubmit =  async e => {
             error={error.grCode?true:false}
             disabled={isSubmitting}
           />
+         </Grid>
+
+         <Grid item xs={4}>
+         
           <KeyboardDatePicker
               fullWidth
               margin="normal"
@@ -255,7 +416,9 @@ const handleSubmit =  async e => {
               error={error.tanggal?true:false}
               disabled={isSubmitting}
             />
-          
+
+         </Grid>
+
 {/*     
        <TextField
             fullWidth
@@ -274,6 +437,7 @@ const handleSubmit =  async e => {
             disabled={isSubmitting}
           /> */}
     
+    <Grid item xs={4}>
     <Switch
     fullWidth
     label="kunci"
@@ -289,8 +453,9 @@ const handleSubmit =  async e => {
         name="kunci"
         inputProps={{ 'aria-label': 'Kunci' }}
       />
+      </Grid>
     
-    
+    </Grid>   
           <br></br>
            <Button variant="contained" color="secondary" onClick={handleSubmit} disabled={isSubmitting}>
               Update
@@ -298,6 +463,103 @@ const handleSubmit =  async e => {
     
         
         </form>
+        
+        <br/><br/>
+        <Grid container spacing={3}>
+                          <Grid item xs={3}>
+                           <IconButton color="primary" onClick={addRow}><Add/></IconButton>
+                          </Grid>
+                          <Grid item xs={3}>
+                         
+                          </Grid>
+                        </Grid>   
+        <Grid container alignItems="center" justify="center">
+           <TableContainer component={Paper}>
+           <Table className={classes.table} size="small">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>No</TableCell>
+                        <TableCell>PN</TableCell>
+                        <TableCell>PN Name</TableCell>
+                        <TableCell>Qty</TableCell>
+                        <TableCell>Unit Price</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>Action</TableCell>
+                    </TableRow>
+                </TableHead>
+
+                <TableBody>. 
+                  { formSub.map((result, index) => {
+                      console.log(index);
+                      return <TableRow>
+                      <TableCell>{index + 1 }</TableCell>
+                      <TableCell id="idPn">{result.idPn}</TableCell>
+                      <TableCell>
+                      <FormControl variant="filled" className={classes.formControl}>
+        <InputLabel htmlFor="filled-age-native-simple">Pilih PN</InputLabel>
+        <Select
+          native
+          value={form.idPn}
+          onChange={ handleChangeSelect(index)}
+          // inputProps={{
+          //   name: 'idPn',
+          //   id: 'filled-age-native-simple',
+          // }}
+          >
+          {partNumberList}
+        </Select>
+      </FormControl>
+
+                      </TableCell>
+                      <TableCell>
+                      <TextField
+                          fullWidth
+                              type="number"
+                              id="qty"
+                              name="qty"
+                              label="Jumlah Barang"
+                              variant="filled"
+                               value={result.qty}
+                              color="secondary"
+                              size="medium"
+                               onChange={handleChangeSub(index)}
+                              // required
+                              // helperText={error.grCode}
+                              // error={error.grCode?true:false}
+                              // disabled={isSubmitting}
+                          />
+                  
+                      </TableCell>
+                      <TableCell>
+                      <TextField
+                          fullWidth
+                              type="number"
+                              id="unitPrice"
+                              name="unitPrice"
+                              label="Harga Satuan"
+                              variant="filled"
+                              value={result.unitPrice}
+                              color="secondary"
+                              size="medium"
+                              onChange={handleChangeSub(index)}
+                              // required
+                              // helperText={error.grCode}
+                              // error={error.grCode?true:false}
+                              // disabled={isSubmitting}
+                          />
+                      </TableCell>
+                      <TableCell>{result.qty *  result.unitPrice}</TableCell>
+                      <TableCell>  <IconButton  color="secondary" onClick={() => removeRow(index)}><RemoveIcon/></IconButton></TableCell>
+                  </TableRow>
+                      
+                  })  }
+                         
+                        
+                  
+                </TableBody>
+            </Table>
+        </TableContainer>
+        </Grid>
         </MuiPickersUtilsProvider>
     
     )
