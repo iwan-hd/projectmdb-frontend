@@ -26,7 +26,7 @@ import NativeSelect from '@material-ui/core/NativeSelect';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-
+import Hidden from '@material-ui/core/Hidden';
 
 import {
   MuiPickersUtilsProvider,
@@ -92,7 +92,7 @@ const [error, setError] = useState({
       
         const {datatabel, message, status} = res.data;
         if (message == 'success') {
-          console.log(res.data);
+      //    console.log(res.data);
          setForm({
           id : datatabel.body.id,
           grPeriode : datatabel.body.grPeriode,
@@ -186,21 +186,36 @@ const addRow = (e) => {
       
       }
 
-      const handleChangeSub = (e , index) => {
-        console.log(e);
-        console.log(index);
-        // setForm( {
-        //    ...form,t`43y.value]
-        // }). 
-        // const forms = form;
-        // forms[index].qty = e.target.value;
-        // forms[index].unirPrice = e.target.value;
-        // forms[index].amount = e.target.value;
-        // this.setState({
-        //   forms
-        // });
+      const handleChangeSub =  index => e =>  {
+      //  console.log([e.target.value]);
+     
+      
+         const forms =  formSub;
+         const newForms = forms.map((form2,idx) =>
+         {
+    //    console.log(form.qty);
 
-    }
+          if (index == idx) {
+            return {
+              ...form2,
+              [e.target.name] : e.target.value,
+               idGr : form.id,
+               amount :form2.qty* form2.unitPrice,
+            }
+          } else {
+            return {
+              ...form2,
+           
+            }
+            }       
+
+    });
+   // console.log(newForms);
+   setFormSub(newForms);
+
+  
+
+  }
 
 
       const handleChecked = e => {
@@ -227,7 +242,7 @@ const addRow = (e) => {
     const removeRow =(index) => {
     
       setFormSub(  [...formSub.slice(0,index), ...formSub.slice(index+1)]);
-      console.log(formSub);
+    //  console.log(formSub);
   }
 
 
@@ -236,113 +251,101 @@ const addRow = (e) => {
         const name =  e.target.value;
         const idx = [index]
 
-      //   const forms = formSub ;
-      //   forms.push()
-      //   setFormSub((formSub) => [
-      //    ...formSub,
-      //    {
-      //        idGr : "",
-      //        idPn : "",
-      //        qty : 0,
-      //        unitPrice : 0,
-      //        amount : 0,
-      //        index : 0
-      //    }
-      // ]);   
-
-        // console.log(index);
-        //  console.log(name);
+      
          const forms =  formSub;
-         const newForms = forms.map((form) =>
+         const newForms = forms.map((form,idx) =>
          {
-          if (form.index == index) {
+        
+          if (index == idx) {
             return {
               ...form,
               idPn : name,
               index : index,
+             
             }
-          }
-          
-         // return form
-    
-       // }
-        //  ({        //       ...form,
-        //       idPn : name,
-        //       index : idx
-        //   }
-         // );
-
-          // const newArr = myArray.map(item => {
-          //   if (ids.indexOf(item.id) !== -1) {
-          //     return {
-          //       ...item,
-          //       foo: 'newFooValue'
-          //     }
-          //       // })
-    
-        
-       
+          }else {
+            return {
+              ...form,
+           
+            }
+            }       
 
     });
-     
-    setFormSub(  newForms);
+     console.log( document.getElementById('test').value);
+   setFormSub(  newForms);
 
   }
-console.log(formSub);
+
 
 const handleSubmit =  async e => {
-    e.preventDefault();  //tetap di halaman ini, spy nga lari ke Halaman lain
+  const newFormsAmount  = formSub.map((form2,idx) =>
+  {
 
-    const findErrors = validate();
+    console.log(form2);
+     return {
+       ...form2,
+        amount :form2.qty* form2.unitPrice,
+     }
+ 
+
+});
+setFormSub(newFormsAmount);
+var p = formSub.map((test) => 
+ test
+);
+alert(JSON.stringify(p));
+  //   e.preventDefault();  //tetap di halaman ini, spy nga lari ke Halaman lain
+
+  //   const findErrors = validate();
   
 
-    if (Object.values(findErrors).some(err => err != '')) {
-      setError(findErrors);
+  //   if (Object.values(findErrors).some(err => err != '')) {
+  //     setError(findErrors);
 
-  } else {
-      setIsSubmitting(true)
+  // } else {
+  //     setIsSubmitting(true)
 
-     console.log(form.grPeriode);
-      var data = { grPeriode : form.grPeriode.toString(), grCode : form.grCode.toString(), tanggal : selectedDate.toString(), kunci : (form.kunci === true) ? '1' : '0'}
-      console.log(data)
+  //    console.log(form.grPeriode);
+  //     var data = { grPeriode : form.grPeriode.toString(), grCode : form.grCode.toString(), tanggal : selectedDate.toString(), kunci : (form.kunci === true) ? '1' : '0'}
+  // //    console.log(data)
      
-      await GRService.updateGr(data,ID)
-      .then(response => {
-        console.log(response.data);
-        MySwal.fire({
-          position: 'top-end',
-          icon: 'success',
-          title: `${response.data.message}`,
-          showConfirmButton: true,
-         // timer: 1500
-        }).then((result) => {
-          if (result.isConfirmed) {
+  //     await GRService.updateGr(data,ID)
+  //     .then(response => {
+  //       console.log(response.data);
+  //       MySwal.fire({
+  //         position: 'top-end',
+  //         icon: 'success',
+  //         title: `${response.data.message}`,
+  //         showConfirmButton: true,
+  //        // timer: 1500
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
             
-            setForm({
-              grPeriode : '',
-              grCode : '',
-              tanggal : '',
-              kunci : '' 
-            })
-            setIsSubmitting(false)
-            window.location.href = '/grlist'
+  //           setForm({
+  //             grPeriode : '',
+  //             grCode : '',
+  //             tanggal : '',
+  //             kunci : '' 
+  //           })
+  //           setIsSubmitting(false)
+  //           window.location.href = '/grlist'
             
-          }
-        })
+  //         }
+  //       })
 
         
-      })
-      .catch(err => {
-        console.log(err);
-        alert(err.message)
-        setIsSubmitting(false)
-      })
-  }
+  //     })
+  //     .catch(err => {
+  //    //   console.log(err);
+  //       alert(err.message)
+  //       setIsSubmitting(false)
+  //     })
+  // }
 
 
   }
 
-
+  console.log(formSub);
   const partnumbers = pnList;
 
 	let partNumberList = partnumbers.length > 0
@@ -379,6 +382,24 @@ const handleSubmit =  async e => {
          <Grid item xs={4}>
          
          <TextField
+         fullWidth
+            type="text"
+            id="grCode"
+            name="grCode"
+            label="GR Name"
+            variant="filled"
+            value={form.grCode}
+            color="secondary"
+            size="medium"
+            onChange={handleChange}
+            required
+            helperText={error.grCode}
+            error={error.grCode?true:false}
+            disabled={isSubmitting}
+          />
+
+
+          <TextField
          fullWidth
             type="text"
             id="grCode"
@@ -499,6 +520,7 @@ const handleSubmit =  async e => {
         <InputLabel htmlFor="filled-age-native-simple">Pilih PN</InputLabel>
         <Select
           native
+        name = {form.idPn}
           value={form.idPn}
           onChange={ handleChangeSelect(index)}
           // inputProps={{
@@ -519,7 +541,7 @@ const handleSubmit =  async e => {
                               name="qty"
                               label="Jumlah Barang"
                               variant="filled"
-                               value={result.qty}
+                            // value={form.qty}
                               color="secondary"
                               size="medium"
                                onChange={handleChangeSub(index)}
@@ -538,7 +560,7 @@ const handleSubmit =  async e => {
                               name="unitPrice"
                               label="Harga Satuan"
                               variant="filled"
-                              value={result.unitPrice}
+                              value={form.unitPrice}
                               color="secondary"
                               size="medium"
                               onChange={handleChangeSub(index)}
@@ -547,8 +569,30 @@ const handleSubmit =  async e => {
                               // error={error.grCode?true:false}
                               // disabled={isSubmitting}
                           />
+                      
+{/*                       
+                         <Hidden>
+                         
+                        <TextField
+                          fullWidth
+                              type="hidden"
+                              id="amount"
+                              name="amount"
+                             // label="amount"
+                              variant="filled"
+                              value={ result.qty *  result.unitPrice}
+                              color="secondary"
+                              size="medium"
+                              onChange={handleChangeSub(index)}
+                              // required
+                              // helperText={error.grCode}
+                              // error={error.grCode?true:false}
+                              // disabled={isSubmitting}
+                          />
+                          </Hidden> */}
+
                       </TableCell>
-                      <TableCell>{result.qty *  result.unitPrice}</TableCell>
+                      <TableCell  id="test">{ result.qty *  result.unitPrice}</TableCell>
                       <TableCell>  <IconButton  color="secondary" onClick={() => removeRow(index)}><RemoveIcon/></IconButton></TableCell>
                   </TableRow>
                       
