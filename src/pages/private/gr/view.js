@@ -8,6 +8,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from '@material-ui/core/TableContainer';
 import Paper from '@material-ui/core/Paper';
 import PartNumberService from '../../../config/api/gr.js';
+import GrSubService from '../../../config/api/grsub.js';
 import {useStyles} from './style.js';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,20 +17,21 @@ import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
 import AddIcon from '@material-ui/icons/Add';
 import Add from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 import RemoveIcon from '@material-ui/icons/Remove';
-
-
+import Tooltip from '@material-ui/core/Tooltip';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 export default function ViewGR({match}) {
     
     console.log(match.params.id);
     const [gr, setGR] = useState({});
     const ID = match.params.id;
     const classes = useStyles();
-  
-    
-    
-
     const [amountRow,setAmountRow] =  useState(0);
+
+    const MySwal = withReactContent(Swal);
+    const [grsub,setGrSub] = useState([]);
 
     useEffect(() => {
         PartNumberService.getId(ID).then(res=>{
@@ -45,7 +47,20 @@ export default function ViewGR({match}) {
             alert(error);
         })
       
-      
+        GrSubService.getGrIdx(ID).then(res=>{
+            // ambil dari postman
+
+            console.log(res);
+            const {datatabel, message, status} = res.data;
+            if (message == 'success') {
+                setGrSub(datatabel.body);
+            } else {
+                alert(message);
+            }
+        })
+        .catch(error => {
+            alert(error);
+        })
 
          
     }, [])
@@ -69,6 +84,47 @@ export default function ViewGR({match}) {
     
         return [day, month, year].join('/');
     }
+
+
+    const handleDelete = idx => {
+ 
+        MySwal.fire({
+            title: 'Are you sure remove this data?',
+            text: "You won't be able to repeat this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+            GrSubService.deleteGr(idx)
+                .then(response => {
+                        console.log(response)
+                        MySwal.fire(
+                            {
+                                title :  `${response.data.datatabel}`,
+                                icon : 'success',
+                                showConfirmButton: false,
+    
+                            }
+                            
+                          )
+                          window.location.reload()
+                       
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+                // location.reload();
+                
+            }
+          })
+    
+      
+        
+    };
+
 
 
     return (
@@ -106,7 +162,63 @@ export default function ViewGR({match}) {
 
         
         </Grid>
+<br></br>
+<br></br>
+        <Grid container spacing={3}>
+                        
+                          <Grid item xs={3}>
+                         
+                          </Grid>
+                        </Grid>   
+        <Grid container alignItems="center" justify="center">
+           <TableContainer component={Paper}>
+           <Table className={classes.table} size="small">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>No</TableCell>
+                        <TableCell>PN</TableCell>
+                    
+                        <TableCell>Qty</TableCell>
+                        <TableCell>Unit Price</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>Action</TableCell>
+                    </TableRow>
+                </TableHead>
+              
+              
+                <TableBody>
+                   {grsub && grsub.map((Gridx,index) => {
 
-        </div>
+                    return <TableRow hover key={index}>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{Gridx.idPn}</TableCell>
+                              <TableCell>{Gridx.qty}</TableCell>
+                              <TableCell>{Gridx.unitprice}</TableCell>
+                              <TableCell>{Gridx.qty* Gridx.unitprice}</TableCell>
+                             
+                              <TableCell>
+                                <Tooltip title="Delete"> 
+                                 <IconButton onClick={() => handleDelete(Gridx.id)}size="small">    
+                                     <DeleteIcon fontSize="small"/>
+                                 </IconButton>
+                                </Tooltip>  
+
+                              </TableCell>
+                              
+                          </TableRow>
+
+                   })}
+
+                </TableBody>
+
+             </Table>   
+
+             </TableContainer>
+             </Grid>
+
+</div>
+
+
+        
     )
 }

@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button";
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
+import GrSubService from '../../../config/api/grsub.js';
 import GRService from '../../../config/api/gr.js';
 import PartNumberService from '../../../config/api/partnumber.js';
 import 'date-fns';
@@ -188,12 +189,10 @@ const addRow = (e) => {
 
       const handleChangeSub =  index => e =>  {
       //  console.log([e.target.value]);
-     
-      
          const forms =  formSub;
          const newForms = forms.map((form2,idx) =>
          {
-    //    console.log(form.qty);
+      // console.log(form2.qty* form2.unitPrice);
 
           if (index == idx) {
             return {
@@ -210,13 +209,14 @@ const addRow = (e) => {
             }       
 
     });
-   // console.log(newForms);
+   
    setFormSub(newForms);
 
   
 
   }
 
+  console.log(formSub);
 
       const handleChecked = e => {
 
@@ -271,7 +271,7 @@ const addRow = (e) => {
             }       
 
     });
-     console.log( document.getElementById('test').value);
+   //  console.log( document.getElementById('test').value);
    setFormSub(  newForms);
 
   }
@@ -281,7 +281,7 @@ const handleSubmit =  async e => {
   const newFormsAmount  = formSub.map((form2,idx) =>
   {
 
-    console.log(form2);
+  //  console.log(form2);
      return {
        ...form2,
         amount :form2.qty* form2.unitPrice,
@@ -293,59 +293,115 @@ setFormSub(newFormsAmount);
 var p = formSub.map((test) => 
  test
 );
-alert(JSON.stringify(p));
-  //   e.preventDefault();  //tetap di halaman ini, spy nga lari ke Halaman lain
+//alert(JSON.stringify(p));
 
-  //   const findErrors = validate();
-  
 
-  //   if (Object.values(findErrors).some(err => err != '')) {
-  //     setError(findErrors);
-
-  // } else {
-  //     setIsSubmitting(true)
-
-  //    console.log(form.grPeriode);
-  //     var data = { grPeriode : form.grPeriode.toString(), grCode : form.grCode.toString(), tanggal : selectedDate.toString(), kunci : (form.kunci === true) ? '1' : '0'}
-  // //    console.log(data)
-     
-  //     await GRService.updateGr(data,ID)
-  //     .then(response => {
-  //       console.log(response.data);
-  //       MySwal.fire({
-  //         position: 'top-end',
-  //         icon: 'success',
-  //         title: `${response.data.message}`,
-  //         showConfirmButton: true,
-  //        // timer: 1500
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
+await GrSubService.deleteGrSub(parseInt(form.id))
+      .then(response => {
+        console.log(response.data);
+        MySwal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: `${response.data.message}`,
+          showConfirmButton: true,
+         // timer: 1500
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setIsSubmitting(false)
+            window.location.href = '/grlist'
             
-  //           setForm({
-  //             grPeriode : '',
-  //             grCode : '',
-  //             tanggal : '',
-  //             kunci : '' 
-  //           })
-  //           setIsSubmitting(false)
-  //           window.location.href = '/grlist'
-            
-  //         }
-  //       })
+          }
+        })
 
         
-  //     })
-  //     .catch(err => {
-  //    //   console.log(err);
-  //       alert(err.message)
-  //       setIsSubmitting(false)
-  //     })
-  // }
+      })
+      .catch(err => {
+     //   console.log(err);
+        alert(err.message)
+        setIsSubmitting(false)
+      })
+
+
+
+
+    await GrSubService.addListGr(JSON.stringify(p))
+      .then(response => {
+        console.log(response.data);
+        MySwal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: `${response.data.message}`,
+          showConfirmButton: true,
+         // timer: 1500
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setIsSubmitting(false)
+            window.location.href = '/grlist'
+            
+          }
+        })
+
+        
+      })
+      .catch(err => {
+     //   console.log(err);
+        alert(err.message)
+        setIsSubmitting(false)
+      })
+  
+
+    e.preventDefault();  //tetap di halaman ini, spy nga lari ke Halaman lain
+
+    const findErrors = validate();
+  
+
+    if (Object.values(findErrors).some(err => err != '')) {
+      setError(findErrors);
+
+  } else {
+      setIsSubmitting(true)
+
+     console.log(form.grPeriode);
+      var data = { grPeriode : form.grPeriode.toString(), grCode : form.grCode.toString(), tanggal : selectedDate.toString(), kunci : (form.kunci === true) ? '1' : '0'}
+  //    console.log(data)
+     
+      await GRService.updateGr(data,ID)
+      .then(response => {
+        console.log(response.data);
+        MySwal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: `${response.data.message}`,
+          showConfirmButton: true,
+         // timer: 1500
+        }).then((result) => {
+          if (result.isConfirmed) {
+            
+            setForm({
+              grPeriode : '',
+              grCode : '',
+              tanggal : '',
+              kunci : '' 
+            })
+            setIsSubmitting(false)
+            window.location.href = '/grlist'
+            
+          }
+        })
+
+        
+      })
+      .catch(err => {
+     //   console.log(err);
+        alert(err.message)
+        setIsSubmitting(false)
+      })
+  }
 
 
   }
 
-  console.log(formSub);
+ // console.log(formSub);
   const partnumbers = pnList;
 
 	let partNumberList = partnumbers.length > 0
@@ -386,7 +442,7 @@ alert(JSON.stringify(p));
             type="text"
             id="grCode"
             name="grCode"
-            label="GR Name"
+            label="GR CODE"
             variant="filled"
             value={form.grCode}
             color="secondary"
@@ -399,22 +455,6 @@ alert(JSON.stringify(p));
           />
 
 
-          <TextField
-         fullWidth
-            type="text"
-            id="grCode"
-            name="grCode"
-            label="GR Name"
-            variant="filled"
-            value={form.grCode}
-            color="secondary"
-            size="medium"
-            onChange={handleChange}
-            required
-            helperText={error.grCode}
-            error={error.grCode?true:false}
-            disabled={isSubmitting}
-          />
          </Grid>
 
          <Grid item xs={4}>
@@ -511,7 +551,7 @@ alert(JSON.stringify(p));
 
                 <TableBody>. 
                   { formSub.map((result, index) => {
-                      console.log(index);
+                   //   console.log(index);
                       return <TableRow>
                       <TableCell>{index + 1 }</TableCell>
                       <TableCell id="idPn">{result.idPn}</TableCell>
@@ -520,7 +560,7 @@ alert(JSON.stringify(p));
         <InputLabel htmlFor="filled-age-native-simple">Pilih PN</InputLabel>
         <Select
           native
-        name = {form.idPn}
+          name = {form.idPn}
           value={form.idPn}
           onChange={ handleChangeSelect(index)}
           // inputProps={{
@@ -528,6 +568,9 @@ alert(JSON.stringify(p));
           //   id: 'filled-age-native-simple',
           // }}
           >
+             <option value="" selected disabled>
+            Pilih PartNumber
+          </option>
           {partNumberList}
         </Select>
       </FormControl>
@@ -538,6 +581,7 @@ alert(JSON.stringify(p));
                           fullWidth
                               type="number"
                               id="qty"
+                              min
                               name="qty"
                               label="Jumlah Barang"
                               variant="filled"
@@ -545,6 +589,7 @@ alert(JSON.stringify(p));
                               color="secondary"
                               size="medium"
                                onChange={handleChangeSub(index)}
+                               InputProps={{ inputProps: { min: 0} }}
                               // required
                               // helperText={error.grCode}
                               // error={error.grCode?true:false}
@@ -564,6 +609,7 @@ alert(JSON.stringify(p));
                               color="secondary"
                               size="medium"
                               onChange={handleChangeSub(index)}
+                              InputProps={{ inputProps: { min: 0} }}
                               // required
                               // helperText={error.grCode}
                               // error={error.grCode?true:false}

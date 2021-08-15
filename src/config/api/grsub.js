@@ -20,8 +20,22 @@ class GrSubService{
         return http.put('/subgr/'+ID,data,{headers: authHeader()});
     }
 
+    
+    getGrIdx(id){
+        return http.get('/listsubgr/'+id, {headers : authHeader()});
+    }
+
+    addListGr(data){
+        return http.post('/subgrlist',data,{headers : authHeader()});
+    }
+
     deleteGr(id){
         return http.delete('/subgr/'+id,{headers : authHeader()});
     }
+
+    deleteGrSub(id){
+        return http.delete('/subgrid/'+id,{headers : authHeader()});
+    }
+
 }
 export default new GrSubService();
